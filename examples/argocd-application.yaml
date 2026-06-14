@@ -1,0 +1,53 @@
+# Application 1 — provider infrastructure (CRDs + Deployment + RBAC + Ingress)
+# Argo CD syncs this whenever config/ changes in Git.
+# Replace repoURL with your actual fork.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webaudio-provider
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOUR_USERNAME/provider-webaudio
+    targetRevision: main
+    path: config
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: webaudio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true   # required for CRDs with large annotations
+---
+# Application 2 — sequencer patterns (Sequencer + Tracks + Steps)
+# This is the developer-facing layer: commit a pattern to Git, hear it play.
+# Changing spec.active on any Step in Git and merging will update the pattern.
+# The reconciler enforces Git as the source of truth — UI clicks get reverted.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webaudio-pattern
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOUR_USERNAME/provider-webaudio
+    targetRevision: main
+    path: examples
+    # Exclude the Argo CD Application files themselves to avoid a loop,
+    # and the Backstage catalog which is registered separately.
+    directory:
+      exclude: '{argocd-application.yaml,backstage-catalog.yaml,kyverno-policies.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true   # any kubectl patch that deviates from Git gets reverted
+    syncOptions:
+      - CreateNamespace=true

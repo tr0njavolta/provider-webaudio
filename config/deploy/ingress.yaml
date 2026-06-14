@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: provider-webaudio
+  namespace: webaudio-system
+  annotations:
+    # Traefik v3 handles WebSocket upgrades transparently — no extra annotation needed.
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: sequencer.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: provider-webaudio
+                port:
+                  name: ui

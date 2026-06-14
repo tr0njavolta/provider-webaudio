@@ -1,0 +1,2 @@
+// Copyright 2024 The provider-webaudio authors.
+// SPDX-License-Identifier: Apache-2.0

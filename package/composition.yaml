@@ -1,0 +1,107 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: sequencer.webaudio.example.com
+  labels:
+    provider: webaudio
+spec:
+  compositeTypeRef:
+    apiVersion: webaudio.example.com/v1alpha1
+    kind: XSequencer
+
+  # The Composition assembles the managed resources a developer gets
+  # when they submit a Sequencer claim. They declare what they want
+  # (bpm, steps, instruments); the Composition decides how to build it.
+  #
+  # This is the abstraction layer: developers don't write Track or Step
+  # YAML. The Composition does that for them, enforcing platform standards.
+
+  resources:
+
+    # ── The core Sequencer managed resource ───────────────────────────────────
+    - name: sequencer
+      base:
+        apiVersion: webaudio.example.com/v1alpha1
+        kind: Sequencer
+        spec:
+          running: false
+      patches:
+        - fromFieldPath: spec.bpm
+          toFieldPath: spec.bpm
+        - fromFieldPath: spec.steps
+          toFieldPath: spec.steps
+        - fromFieldPath: metadata.labels
+          toFieldPath: metadata.labels
+        - fromFieldPath: status.ready
+          toFieldPath: status.ready
+          policy:
+            fromFieldPath: Optional
+
+    # ── Kick track ────────────────────────────────────────────────────────────
+    # Only created when "kick" is in spec.instruments.
+    # In a full implementation you'd use a function (function-patch-and-transform)
+    # to conditionally include resources. Shown here statically for clarity.
+    - name: track-kick
+      base:
+        apiVersion: webaudio.example.com/v1alpha1
+        kind: Track
+        spec:
+          instrument: kick
+          volume: 0.9
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.sequencerRef
+          transforms:
+            - type: string
+              string:
+                fmt: "%s"
+
+    # ── Snare track ───────────────────────────────────────────────────────────
+    - name: track-snare
+      base:
+        apiVersion: webaudio.example.com/v1alpha1
+        kind: Track
+        spec:
+          instrument: snare
+          volume: 0.8
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.sequencerRef
+          transforms:
+            - type: string
+              string:
+                fmt: "%s"
+
+    # ── Hihat track ───────────────────────────────────────────────────────────
+    - name: track-hihat
+      base:
+        apiVersion: webaudio.example.com/v1alpha1
+        kind: Track
+        spec:
+          instrument: hihat
+          volume: 0.6
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.sequencerRef
+          transforms:
+            - type: string
+              string:
+                fmt: "%s"
+
+    # ── Synth track ───────────────────────────────────────────────────────────
+    - name: track-synth
+      base:
+        apiVersion: webaudio.example.com/v1alpha1
+        kind: Track
+        spec:
+          instrument: synth
+          waveform: square
+          frequency: 440
+          volume: 0.5
+      patches:
+        - fromFieldPath: metadata.name
+          toFieldPath: spec.sequencerRef
+          transforms:
+            - type: string
+              string:
+                fmt: "%s"

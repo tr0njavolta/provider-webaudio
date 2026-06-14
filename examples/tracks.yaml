@@ -1,0 +1,98 @@
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-b
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 493.88
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-a
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 440.00
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-g
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 392.00
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-f
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 349.23
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-e
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 329.63
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-d
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 293.66
+  volume: 0.6
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Track
+metadata:
+  name: note-c
+  namespace: default
+  labels:
+    team: platform
+spec:
+  sequencerRef: my-sequencer
+  instrument: synth
+  waveform: sine
+  frequency: 261.63
+  volume: 0.6

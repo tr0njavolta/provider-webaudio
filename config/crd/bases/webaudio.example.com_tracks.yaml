@@ -1,0 +1,100 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.21.0
+  name: tracks.webaudio.example.com
+spec:
+  group: webaudio.example.com
+  names:
+    categories:
+    - webaudio
+    kind: Track
+    listKind: TrackList
+    plural: tracks
+    singular: track
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.sequencerRef
+      name: SEQUENCER
+      type: string
+    - jsonPath: .spec.instrument
+      name: INSTRUMENT
+      type: string
+    - jsonPath: .status.ready
+      name: READY
+      type: boolean
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Track is one row in the sequencer grid.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TrackSpec defines the desired state of a Track.
+            properties:
+              frequency:
+                maximum: 20000
+                minimum: 20
+                type: number
+              instrument:
+                enum:
+                - kick
+                - snare
+                - hihat
+                - synth
+                type: string
+              muted:
+                type: boolean
+              sequencerRef:
+                type: string
+              volume:
+                maximum: 1
+                minimum: 0
+                type: number
+              waveform:
+                enum:
+                - sine
+                - square
+                - sawtooth
+                - triangle
+                - noise
+                type: string
+            required:
+            - instrument
+            - sequencerRef
+            - volume
+            type: object
+          status:
+            description: TrackStatus reflects what the Web Audio engine has created.
+            properties:
+              nodeID:
+                type: string
+              ready:
+                type: boolean
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

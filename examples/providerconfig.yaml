@@ -1,0 +1,8 @@
+apiVersion: webaudio.example.com/v1alpha1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  serverPort: 9090
+  sampleRate: 44100
+  driftCorrectionInterval: 2

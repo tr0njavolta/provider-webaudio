@@ -1,0 +1,72 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-team-label
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: require-team-label
+      match:
+        any:
+          - resources:
+              kinds:
+                - "webaudio.example.com/*/Sequencer"
+                - "webaudio.example.com/*/Track"
+                - "webaudio.example.com/*/Step"
+      validate:
+        message: "All webaudio resources must have a `team` label."
+        pattern:
+          metadata:
+            labels:
+              team: "?*"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-bpm-range
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-bpm
+      match:
+        any:
+          - resources:
+              kinds:
+                - "webaudio.example.com/*/Sequencer"
+      validate:
+        message: "BPM must be between 20 and 300."
+        deny:
+          conditions:
+            any:
+              - key: "{{ request.object.spec.bpm }}"
+                operator: LessThan
+                value: 20
+              - key: "{{ request.object.spec.bpm }}"
+                operator: GreaterThan
+                value: 300
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-step-index
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-step-index
+      match:
+        any:
+          - resources:
+              kinds:
+                - "webaudio.example.com/*/Step"
+      validate:
+        message: "Step index must be 0-15."
+        deny:
+          conditions:
+            any:
+              - key: "{{ request.object.spec.index }}"
+                operator: LessThan
+                value: 0
+              - key: "{{ request.object.spec.index }}"
+                operator: GreaterThan
+                value: 15

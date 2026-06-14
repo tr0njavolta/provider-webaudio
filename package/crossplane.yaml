@@ -1,0 +1,17 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-webaudio
+  annotations:
+    meta.crossplane.io/maintainer: platform-team@example.com
+    meta.crossplane.io/source: github.com/example/provider-webaudio
+    meta.crossplane.io/description: |
+      A Crossplane provider for the Web Audio API.
+      Manages Sequencer, Track, and Step resources that drive a browser-based
+      4x4 step sequencer. Used as a teaching tool for platform engineering concepts:
+      reconciler loops, drift detection, Compositions, XRDs, and Claims.
+spec:
+  crossplane:
+    version: ">=2.0.0"
+  controller:
+    image: xpkg.upbound.io/example/provider-webaudio:latest

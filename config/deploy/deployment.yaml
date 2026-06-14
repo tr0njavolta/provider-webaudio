@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provider-webaudio
+  namespace: webaudio-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: provider-webaudio
+  template:
+    metadata:
+      labels:
+        app: provider-webaudio
+    spec:
+      serviceAccountName: provider-webaudio
+      containers:
+        - name: provider
+          image: provider-webaudio:latest
+          # imagePullPolicy Never tells KinD to use the locally loaded image
+          # rather than trying to pull from a registry.
+          imagePullPolicy: Never
+          args:
+            - --server-port=9090
+            - --metrics-bind-address=:8082
+            - --health-probe-bind-address=:8083
+          ports:
+            - name: ui
+              containerPort: 9090
+            - name: metrics
+              containerPort: 8082
+            - name: health
+              containerPort: 8083
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 5

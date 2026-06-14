@@ -1,0 +1,20 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: provider-webaudio
+rules:
+  # Manage webaudio resources and their status subresources
+  - apiGroups: [webaudio.example.com]
+    resources: [sequencers, tracks, steps, providerconfigs]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [webaudio.example.com]
+    resources: [sequencers/status, tracks/status, steps/status]
+    verbs: [get, update, patch]
+  # controller-runtime leader election
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, patch, delete]
+  # controller-runtime events
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [create, patch]

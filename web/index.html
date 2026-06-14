@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>provider-webaudio</title>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3e;
+      --text: #e8e8f0;
+      --text-muted: #6060a0;
+      --accent: #6c63ff;
+      --active: #6c63ff;
+      --inactive: #1a1a26;
+      --success: #44cc88;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 2rem;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header h1 { font-size: 0.85rem; font-weight: 400; color: var(--text-muted); letter-spacing: 0.1em; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border); margin-left: auto; transition: background 0.3s;
+    }
+    .dot.on { background: var(--success); }
+
+    .transport {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .bpm-val {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 3ch;
+    }
+    .bpm-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.15em; }
+
+    .grid {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .note-label {
+      text-align: right;
+    }
+    .note-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .note-hz {
+      font-size: 0.55rem;
+      color: #3a3a60;
+      letter-spacing: 0.03em;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 5px;
+    }
+
+    .step {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: var(--inactive);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s, transform 0.05s;
+    }
+    .step:hover { border-color: #4a4480; }
+    .step:active { transform: scale(0.92); }
+    .step.active {
+      background: var(--active);
+      border-color: var(--active);
+    }
+    .step.current {
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
+    }
+    .step.active.current {
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4);
+      background: #8880ff;
+    }
+
+    /* beat group spacing */
+    .step:nth-child(4n+1) { margin-left: 4px; }
+
+    #empty {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>provider-webaudio</h1>
+  <div class="dot" id="dot"></div>
+</header>
+
+<div class="transport">
+  <div>
+    <div class="bpm-val" id="bpm">—</div>
+    <div class="bpm-label">BPM</div>
+  </div>
+</div>
+
+<div id="empty">connecting…</div>
+<div class="grid" id="grid" style="display:none"></div>
+
+<script src="audio.js"></script>
+<script>
+// When served through the in-cluster Ingress (sequencer.localhost), the
+// WebSocket is on the same host/port as the page — no explicit port needed.
+// When running locally with `go run`, location.port is 9090.
+const WS = location.port
+  ? `ws://${location.hostname}:${location.port}/ws`
+  : `ws://${location.hostname}/ws`
+let ws, state, currentStep = -1, schedulerTimer = null
+
+// Maps track resource name → display label and standard frequency
+const TRACK_NOTE = {
+  'note-c': { name: 'C4', freq: 261.63 },
+  'note-d': { name: 'D4', freq: 293.66 },
+  'note-e': { name: 'E4', freq: 329.63 },
+  'note-f': { name: 'F4', freq: 349.23 },
+  'note-g': { name: 'G4', freq: 392.00 },
+  'note-a': { name: 'A4', freq: 440.00 },
+  'note-b': { name: 'B4', freq: 493.88 },
+}
+
+function noteInfo(trackName) {
+  return TRACK_NOTE[trackName] || { name: trackName, freq: null }
+}
+
+// Sort tracks high pitch → low pitch (piano roll convention)
+function sortedTracks(tracks) {
+  return [...tracks].sort((a, b) => {
+    const fa = a.frequency || noteInfo(a.name).freq || 0
+    const fb = b.frequency || noteInfo(b.name).freq || 0
+    return fb - fa
+  })
+}
+
+function connect() {
+  ws = new WebSocket(WS)
+  ws.onopen = () => document.getElementById('dot').classList.add('on')
+  ws.onclose = () => {
+    document.getElementById('dot').classList.remove('on')
+    setTimeout(connect, 2000)
+  }
+  ws.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data)
+      const payload = typeof msg.payload === 'string' ? JSON.parse(msg.payload) : msg.payload
+      if (msg.type === 'state') onState(payload)
+    } catch(err) { console.error(err) }
+  }
+}
+
+// localOverrides tracks steps the user has clicked, keyed by step name.
+// The reconciler will clear these when it corrects drift.
+const localOverrides = {}
+
+function onState(payload) {
+  if (!payload.sequencers?.length) return
+  const prev = state
+  state = payload.sequencers[0]
+  document.getElementById('bpm').textContent = state.bpm
+
+  // Clear any local overrides where spec now matches what we set
+  // (i.e. the reconciler has corrected the drift)
+  state.tracks.forEach(track => {
+    track.steps?.forEach(step => {
+      if (localOverrides[step.name] !== undefined) {
+        if (step.active === localOverrides[step.name]) {
+          // Reconciler confirmed our value — clear override
+          delete localOverrides[step.name]
+        } else {
+          // Reconciler reverted our change — clear override, let spec win
+          delete localOverrides[step.name]
+        }
+      }
+    })
+  })
+
+  if (!prev) {
+    renderGrid()
+  } else {
+    // Only update individual cells, don't rebuild the whole grid
+    updateCells()
+  }
+
+  if (state.running && !schedulerTimer) startScheduler()
+  if (!state.running && schedulerTimer) stopScheduler()
+}
+
+function updateCells() {
+  document.querySelectorAll('.steps').forEach((stepsEl, rowIdx) => {
+    const sorted = sortedTracks(state.tracks)
+    const track = sorted[rowIdx]
+    if (!track) return
+    const sorted16 = [...(track.steps||[])].sort((a,b) => a.index - b.index)
+    Array.from(stepsEl.children).forEach((el, i) => {
+      const step = sorted16[i]
+      if (!step) return
+      // Use local override if present, otherwise use spec
+      const active = localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active
+      el.classList.toggle('active', active)
+    })
+  })
+}
+
+function renderGrid() {
+  if (!state?.tracks?.length) return
+  document.getElementById('empty').style.display = 'none'
+  const grid = document.getElementById('grid')
+  grid.style.display = 'flex'
+  grid.innerHTML = ''
+
+  const sorted = sortedTracks(state.tracks)
+
+  sorted.forEach(track => {
+    const info = noteInfo(track.name)
+    const freq = track.frequency || info.freq
+
+    const row = document.createElement('div')
+    row.className = 'row'
+
+    const labelEl = document.createElement('div')
+    labelEl.className = 'note-label'
+    labelEl.innerHTML = `<div class="note-name">${info.name}</div>${freq ? `<div class="note-hz">${freq.toFixed(0)}Hz</div>` : ''}`
+    row.appendChild(labelEl)
+
+    const stepsEl = document.createElement('div')
+    stepsEl.className = 'steps'
+
+    const sorted16 = [...(track.steps||[])].sort((a,b) => a.index - b.index)
+    sorted16.forEach(step => {
+      const el = document.createElement('div')
+      el.className = 'step' + (step.active ? ' active' : '') + (step.index === currentStep ? ' current' : '')
+      el.addEventListener('click', () => {
+        const newActive = !( localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active )
+        localOverrides[step.name] = newActive
+        el.classList.toggle('active', newActive)
+        sendPatch(step.name, newActive)
+      })
+      stepsEl.appendChild(el)
+    })
+
+    row.appendChild(stepsEl)
+    grid.appendChild(row)
+  })
+}
+
+function sendPatch(stepName, active) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return
+  ws.send(JSON.stringify({
+    type: 'patch',
+    payload: JSON.stringify({ stepName, active })
+  }))
+}
+
+function startScheduler() {
+  const interval = (60 / state.bpm / 4) * 1000
+  schedulerTimer = setInterval(tick, interval)
+}
+
+function stopScheduler() {
+  clearInterval(schedulerTimer)
+  schedulerTimer = null
+  currentStep = -1
+}
+
+function tick() {
+  if (!state) return
+  currentStep = (currentStep + 1) % 16
+  const sorted = sortedTracks(state.tracks)
+  sorted.forEach(track => {
+    if (track.muted) return
+    const steps = [...(track.steps||[])].sort((a,b) => a.index - b.index)
+    const step = steps[currentStep]
+    const active = step && (localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active)
+    if (active) {
+      const freq = track.frequency || noteInfo(track.name).freq || 440
+      playInstrument(track.instrument, track.volume, step.velocity, track.waveform, freq)
+    }
+  })
+  document.querySelectorAll('.steps').forEach(stepsEl => {
+    Array.from(stepsEl.children).forEach((el, i) => el.classList.toggle('current', i === currentStep))
+  })
+}
+
+connect()
+</script>
+</body>
+</html>

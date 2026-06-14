@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: provider-webaudio
+  title: Web Audio Sequencer
+  description: |
+    A Crossplane provider that drives a 16-step musical sequencer in the browser.
+    Declare your pattern in Kubernetes — the reconciler enforces it.
+    Click a step in the UI to trigger drift; watch Kubernetes correct it.
+  annotations:
+    argocd/app-name: webaudio-provider
+    backstage.io/kubernetes-label-selector: app=provider-webaudio
+  tags:
+    - crossplane
+    - platform-engineering
+    - demo
+  links:
+    - url: http://sequencer.localhost
+      title: Live Sequencer UI
+      icon: web
+    - url: http://argocd.localhost/applications/webaudio-provider
+      title: Argo CD — provider
+      icon: dashboard
+    - url: http://argocd.localhost/applications/webaudio-pattern
+      title: Argo CD — pattern
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: experimental
+  owner: platform-team
+  system: backstack

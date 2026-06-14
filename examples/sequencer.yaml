@@ -1,0 +1,12 @@
+apiVersion: webaudio.example.com/v1alpha1
+kind: Sequencer
+metadata:
+  name: my-sequencer
+  namespace: default
+  labels:
+    team: platform          # Kyverno requires this label
+    app.kubernetes.io/part-of: webaudio-demo
+spec:
+  bpm: 120
+  steps: 16
+  running: true

@@ -1,0 +1,150 @@
+# catalog-info.yaml — registers the provider-webaudio component in Backstage
+# Drop this file at the root of your repo and import the URL into Backstage.
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: provider-webaudio
+  title: Web Audio Sequencer Provider
+  description: |
+    A Crossplane provider for the Web Audio API. Manages Sequencer, Track,
+    and Step resources that drive a browser-based 4x4 step sequencer.
+    Used to teach Crossplane provider development and platform engineering concepts.
+  annotations:
+    # Argo CD integration — Backstage shows sync status for this component
+    argocd/app-name: webaudio-platform
+
+    # Link to the live web UI (served by the provider's HTTP server)
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - crossplane
+    - platform-engineering
+    - webaudio
+    - tutorial
+  links:
+    - url: http://localhost:9090
+      title: Live Sequencer UI
+      icon: web
+spec:
+  type: service
+  lifecycle: experimental
+  owner: platform-team
+
+---
+# Software Template — lets developers claim a Sequencer from the Backstage portal
+# without knowing anything about Crossplane, Tracks, or Steps.
+#
+# The template:
+#   1. Collects inputs (name, BPM, instruments, pattern)
+#   2. Renders a Sequencer claim YAML from those inputs
+#   3. Opens a PR to the GitOps repo
+#   4. Argo CD picks up the PR merge and syncs the claim
+#   5. Crossplane reconciles it into Tracks, Steps, and a Web Audio engine
+#   6. The component appears in the Backstage catalog with a link to the UI
+
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-sequencer
+  title: Create a Web Audio Sequencer
+  description: |
+    Provision a 4x4 step sequencer running in your cluster.
+    Backed by Crossplane — your pattern lives in Git and is enforced by the reconciler.
+  tags:
+    - crossplane
+    - webaudio
+spec:
+  owner: platform-team
+  type: service
+
+  parameters:
+    - title: Sequencer configuration
+      required: [name, bpm, team]
+      properties:
+
+        name:
+          title: Sequencer name
+          type: string
+          description: Kubernetes resource name (lowercase, no spaces)
+          pattern: '^[a-z][a-z0-9-]*$'
+
+        team:
+          title: Your team name
+          type: string
+          description: Used for the required `team` label (Kyverno enforces this)
+
+        bpm:
+          title: BPM
+          type: integer
+          default: 120
+          minimum: 20
+          maximum: 300
+          description: Tempo in beats per minute
+
+        steps:
+          title: Steps
+          type: integer
+          default: 16
+          enum: [4, 8, 16]
+          description: Number of steps in the sequence
+
+        instruments:
+          title: Instruments
+          type: array
+          items:
+            type: string
+            enum: [kick, snare, hihat, synth]
+          default: [kick, snare, hihat]
+          uniqueItems: true
+
+        pattern:
+          title: Seed pattern
+          type: string
+          default: fourOnTheFloor
+          enum: [fourOnTheFloor, offbeat, empty]
+          description: Starting step pattern. You can edit individual steps after claiming.
+
+  steps:
+    - id: fetch-template
+      name: Fetch base template
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          team: ${{ parameters.team }}
+          bpm: ${{ parameters.bpm }}
+          steps: ${{ parameters.steps }}
+          instruments: ${{ parameters.instruments }}
+          pattern: ${{ parameters.pattern }}
+
+    - id: publish
+      name: Open PR to GitOps repo
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=provider-webaudio&owner=YOUR_USERNAME
+        title: "feat: add sequencer ${{ parameters.name }}"
+        branchName: sequencer/${{ parameters.name }}
+        description: |
+          Adds a new Sequencer claim: **${{ parameters.name }}**
+          - BPM: ${{ parameters.bpm }}
+          - Steps: ${{ parameters.steps }}
+          - Instruments: ${{ parameters.instruments }}
+          - Pattern: ${{ parameters.pattern }}
+
+          Argo CD will sync this after merge. The reconciler will provision
+          the Web Audio engine automatically.
+
+    - id: register
+      name: Register in Backstage catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.remoteUrl }}
+        catalogInfoPath: catalog-info.yaml
+
+  output:
+    links:
+      - title: Pull Request
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Live UI (after sync)
+        url: http://localhost:9090

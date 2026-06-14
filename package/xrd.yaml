@@ -1,0 +1,65 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xsequencers.webaudio.example.com
+spec:
+  group: webaudio.example.com
+
+  # The composite resource — what the platform team works with directly.
+  names:
+    kind: XSequencer
+    plural: xsequencers
+
+  # The claim — what a developer puts in their namespace.
+  # They don't need to know about Tracks or Steps.
+  claimNames:
+    kind: Sequencer
+    plural: sequencers
+
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required: [bpm, steps, instruments]
+              properties:
+
+                bpm:
+                  type: integer
+                  minimum: 20
+                  maximum: 300
+                  description: Tempo in beats per minute.
+
+                steps:
+                  type: integer
+                  enum: [4, 8, 16]
+                  description: Number of steps in the sequence.
+
+                instruments:
+                  type: array
+                  description: Which instruments to include. Each becomes a Track.
+                  items:
+                    type: string
+                    enum: [kick, snare, hihat, synth]
+
+                pattern:
+                  type: string
+                  enum: [fourOnTheFloor, offbeat, empty]
+                  default: empty
+                  description: |
+                    Seed pattern. "fourOnTheFloor" pre-activates the classic
+                    kick/snare/hihat pattern. Developers can override individual
+                    Steps after claiming.
+
+            status:
+              type: object
+              properties:
+                ready:
+                  type: boolean
+                observedBPM:
+                  type: integer

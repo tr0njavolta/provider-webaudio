@@ -1,0 +1,582 @@
+# 16-step sequencer — C major arpeggio: C4 E4 G4 A4 repeating
+# note-c (C4 261.63 Hz): steps 0, 4, 8, 12
+# note-d (D4 293.66 Hz): inactive — toggle via kubectl or the UI
+# note-e (E4 329.63 Hz): steps 1, 5, 9, 13
+# note-f (F4 349.23 Hz): inactive
+# note-g (G4 392.00 Hz): steps 2, 6, 10, 14
+# note-a (A4 440.00 Hz): steps 3, 7, 11, 15
+# note-b (B4 493.88 Hz): inactive
+
+# ── C4 (261.63 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 0,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 4,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 8,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 12, active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-c-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-c, index: 15, active: false, velocity: 0.8 }
+
+# ── D4 (293.66 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-d-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-d, index: 15, active: false, velocity: 0.8 }
+
+# ── E4 (329.63 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 1,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 5,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 9,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 13, active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-e-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-e, index: 15, active: false, velocity: 0.8 }
+
+# ── F4 (349.23 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-f-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-f, index: 15, active: false, velocity: 0.8 }
+
+# ── G4 (392.00 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 2,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 6,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 10, active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 14, active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-g-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-g, index: 15, active: false, velocity: 0.8 }
+
+# ── A4 (440.00 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 3,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 7,  active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 11, active: true,  velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-a-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-a, index: 15, active: true,  velocity: 0.8 }
+
+# ── B4 (493.88 Hz) ────────────────────────────────────────────────────────────
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-0,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 0,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-1,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 1,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-2,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 2,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-3,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 3,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-4,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 4,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-5,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 5,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-6,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 6,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-7,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 7,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-8,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 8,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-9,  namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 9,  active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-10, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 10, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-11, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 11, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-12, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 12, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-13, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 13, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-14, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 14, active: false, velocity: 0.8 }
+---
+apiVersion: webaudio.example.com/v1alpha1
+kind: Step
+metadata: { name: note-b-step-15, namespace: default, labels: { team: platform } }
+spec: { trackRef: note-b, index: 15, active: false, velocity: 0.8 }
