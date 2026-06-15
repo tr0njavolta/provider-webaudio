@@ -9,7 +9,6 @@ metadata:
     Click a step in the UI to trigger drift; watch Kubernetes correct it.
   annotations:
     argocd/app-name: webaudio-provider
-    backstage.io/kubernetes-label-selector: app=provider-webaudio
   tags:
     - crossplane
     - platform-engineering
@@ -27,5 +26,4 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: platform-team
-  system: backstack
+  owner: guests
