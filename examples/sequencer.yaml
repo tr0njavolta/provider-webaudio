@@ -7,6 +7,6 @@ metadata:
     team: platform          # Kyverno requires this label
     app.kubernetes.io/part-of: webaudio-demo
 spec:
-  bpm: 120
+  bpm: 60
   steps: 16
   running: true
