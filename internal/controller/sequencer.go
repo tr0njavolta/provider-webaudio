@@ -7,7 +7,9 @@ import (
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"k8s.io/apimachinery/pkg/runtime"
 
 	webaudiov1alpha1 "github.com/example/provider-webaudio/apis/webaudio/v1alpha1"
@@ -70,7 +72,7 @@ func (r *SequencerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, fmt.Errorf("updating status: %w", err)
 	}
 
-	return ctrl.Result{RequeueAfter: 30 * time.Second}, nil
+	return ctrl.Result{RequeueAfter: 5 * time.Second}, nil
 }
 
 func (r *SequencerReconciler) buildStatePayload(ctx context.Context, seq *webaudiov1alpha1.Sequencer) (server.StatePayload, error) {
@@ -127,8 +129,31 @@ func (r *SequencerReconciler) buildStatePayload(ctx context.Context, seq *webaud
 }
 
 func (r *SequencerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	// Re-reconcile the Sequencer (and broadcast to browser) whenever any Step changes.
+	stepToSequencer := handler.EnqueueRequestsFromMapFunc(
+		func(ctx context.Context, obj client.Object) []reconcile.Request {
+			step := obj.(*webaudiov1alpha1.Step)
+			var trackList webaudiov1alpha1.TrackList
+			if err := r.List(ctx, &trackList, client.InNamespace(step.Namespace)); err != nil {
+				return nil
+			}
+			for _, track := range trackList.Items {
+				if track.Name == step.Spec.TrackRef {
+					return []reconcile.Request{{
+						NamespacedName: client.ObjectKey{
+							Name:      track.Spec.SequencerRef,
+							Namespace: track.Namespace,
+						},
+					}}
+				}
+			}
+			return nil
+		},
+	)
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&webaudiov1alpha1.Sequencer{}).
 		Owns(&webaudiov1alpha1.Track{}).
+		Watches(&webaudiov1alpha1.Step{}, stepToSequencer).
 		Complete(r)
 }

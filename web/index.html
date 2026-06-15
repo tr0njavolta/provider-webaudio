@@ -3,289 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROVIDER-WEBAUDIO</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <title>provider-webaudio</title>
   <style>
     :root {
-      --bg:            #080705;
-      --panel:         #131109;
-      --panel-hi:      #1c1810;
-      --border:        #2e2618;
-      --border-hi:     #3e3420;
-      --text:          #c8902a;
-      --text-dim:      #5a4412;
-      --led-off:       #0b0900;
-      --led-amber:     #ff8c00;
-      --led-amber-dim: #7a3a00;
-      --led-glow:      rgba(255,140,0,0.55);
-      --led-green:     #00e87a;
-      --led-green-glow:rgba(0,232,122,0.5);
-      --led-red:       #ee2200;
-      --led-red-glow:  rgba(238,34,0,0.5);
-      --screw:         #3a3020;
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --border: #2e2e3e;
+      --text: #e8e8f0;
+      --text-muted: #6060a0;
+      --accent: #6c63ff;
+      --active: #6c63ff;
+      --inactive: #1a1a26;
+      --success: #44cc88;
+      --danger: #cc4444;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Share Tech Mono', monospace;
+      font-family: 'SF Mono', 'Fira Code', monospace;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem 1rem;
+      gap: 2rem;
     }
 
-    /* scanlines */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent 0px,
-        transparent 3px,
-        rgba(0,0,0,0.07) 3px,
-        rgba(0,0,0,0.07) 4px
-      );
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .unit {
+    header {
       width: 100%;
-      max-width: 860px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-bottom: 3px solid #050402;
-      border-right: 3px solid #050402;
-      padding: 1.25rem 1.5rem 1.5rem;
-      position: relative;
-    }
-
-    /* corner screws */
-    .unit::before, .unit::after,
-    .screw-bl, .screw-br {
-      content: '';
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #5a5040, #252010);
-      border: 1px solid #1a1608;
-      box-shadow: inset 0 1px 2px rgba(255,255,255,0.08);
-    }
-    .unit::before { top: 10px; left: 10px; }
-    .unit::after  { top: 10px; right: 10px; }
-    .screw-bl { bottom: 10px; left: 10px; }
-    .screw-br { bottom: 10px; right: 10px; }
-
-    /* ── header ── */
-    .header {
+      max-width: 800px;
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
     }
-
-    .brand {
-      font-family: 'VT323', monospace;
-      font-size: 1.4rem;
-      letter-spacing: 0.2em;
-      color: var(--text);
-      text-shadow: 0 0 12px rgba(200,144,42,0.4);
-    }
+    header h1 { font-size: 0.85rem; font-weight: 400; color: var(--text-muted); letter-spacing: 0.1em; }
 
     .dot {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      background: var(--led-off);
-      border: 1px solid var(--border-hi);
-      box-shadow: inset 0 0 3px rgba(0,0,0,0.8);
-      transition: all 0.3s;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border); transition: background 0.3s;
     }
-    .dot.on {
-      background: var(--led-green);
-      box-shadow: 0 0 8px var(--led-green-glow),
-                  0 0 16px rgba(0,232,122,0.25);
-      border-color: var(--led-green);
-    }
+    .dot.on { background: var(--success); }
 
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
-
-    /* ── transport ── */
-    .transport {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
-    }
-    .bpm-display {
-      font-family: 'VT323', monospace;
-      font-size: 2.8rem;
-      line-height: 1;
-      color: var(--led-amber);
-      text-shadow: 0 0 16px var(--led-glow),
-                   0 0 32px rgba(255,140,0,0.2);
-      min-width: 3ch;
-    }
-    .bpm-label {
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      letter-spacing: 0.2em;
-    }
-
-    /* ── grid ── */
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 42px 28px 1fr;
-      gap: 8px;
-      align-items: center;
-    }
-
-    /* note label */
-    .note-label {
-      text-align: right;
-      font-family: 'VT323', monospace;
-      font-size: 1.1rem;
-      color: var(--text);
-      letter-spacing: 0.05em;
-      line-height: 1;
-    }
-    .note-hz {
-      font-size: 0.5rem;
-      color: var(--text-dim);
-      letter-spacing: 0.03em;
-      display: block;
-    }
-
-    /* mute button */
     .mute-btn {
-      font-family: 'VT323', monospace;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-      height: 22px;
-      width: 22px;
+      font-family: inherit;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 3px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
+    }
+    .mute-btn:hover { border-color: var(--text-muted); color: var(--text); }
+    .mute-btn.muted { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+    .transport {
+      width: 100%;
+      max-width: 800px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: var(--led-off);
-      border: 1px solid var(--border-hi);
-      border-bottom: 2px solid #020201;
-      border-right: 2px solid #020201;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.08s;
-      user-select: none;
+      gap: 1.5rem;
     }
-    .mute-btn:active { border-bottom-width: 1px; border-right-width: 1px; transform: translate(1px,1px); }
-    .mute-btn.muted {
-      background: var(--led-red);
-      color: #fff;
-      border-color: var(--led-red);
-      box-shadow: 0 0 8px var(--led-red-glow), 0 0 20px rgba(238,34,0,0.25);
-    }
+    .bpm-val { font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; min-width: 3ch; }
+    .bpm-label { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.15em; }
 
-    /* steps */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(16, 1fr);
-      gap: 4px;
-      transition: opacity 0.2s;
-    }
+    .grid { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 6px; }
 
-    .row.muted .steps { opacity: 0.2; }
+    .row { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; }
+
+    .note-label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-align: right; letter-spacing: 0.05em; }
+    .note-hz    { font-size: 0.55rem; color: #3a3a60; display: block; }
+
+    .steps { display: grid; grid-template-columns: repeat(16, 1fr); gap: 5px; }
 
     .step {
       aspect-ratio: 1;
-      background: var(--led-off);
+      border-radius: 3px;
+      background: var(--inactive);
       border: 1px solid var(--border);
-      border-bottom: 2px solid #020201;
-      border-right: 2px solid #020201;
       cursor: pointer;
-      transition: background 0.07s, box-shadow 0.07s;
-      position: relative;
+      transition: background 0.1s, border-color 0.1s, transform 0.05s;
     }
-    .step::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    .step:active { border-bottom-width: 1px; border-right-width: 1px; transform: translate(1px,1px); }
+    .step:hover { border-color: #4a4480; }
+    .step:active { transform: scale(0.92); }
+    .step.active { background: var(--active); border-color: var(--active); }
+    .step.current { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25); }
+    .step.active.current { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4); background: #8880ff; }
+    .step:nth-child(4n+1) { margin-left: 4px; }
 
-    /* beat group gap */
-    .step:nth-child(4n+1) { margin-left: 6px; }
-    .step:nth-child(1)    { margin-left: 0; }
-
-    .step.active {
-      background: var(--led-amber);
-      border-color: var(--led-amber-dim);
-      box-shadow: 0 0 6px var(--led-glow),
-                  0 0 14px rgba(255,140,0,0.25),
-                  inset 0 0 4px rgba(255,200,80,0.2);
-    }
-    .step.current:not(.active) {
-      border-color: var(--led-green);
-      box-shadow: 0 0 5px var(--led-green-glow);
-      background: rgba(0,232,122,0.08);
-    }
-    .step.active.current {
-      background: #ffaa20;
-      box-shadow: 0 0 10px var(--led-glow),
-                  0 0 24px rgba(255,140,0,0.4),
-                  inset 0 0 8px rgba(255,220,120,0.3);
-    }
-
-    /* divider lines between beat groups */
-    .beat-divider {
-      width: 1px;
-      background: var(--border-hi);
-      align-self: stretch;
-      margin: 0 1px;
-    }
-
-    #empty {
-      color: var(--text-dim);
-      font-family: 'VT323', monospace;
-      font-size: 1.1rem;
-      letter-spacing: 0.15em;
-      text-align: center;
-      padding: 2rem 0;
-    }
+    #empty { color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.1em; }
   </style>
 </head>
 <body>
-<div class="unit">
-  <div class="screw-bl"></div>
-  <div class="screw-br"></div>
 
-  <div class="header">
-    <span class="brand">PROVIDER-WEBAUDIO</span>
-    <div class="header-right">
-      <div class="dot" id="dot"></div>
-    </div>
-  </div>
+<header>
+  <h1>provider-webaudio</h1>
+  <button class="mute-btn" id="muteBtn">MUTE</button>
+  <div class="dot" id="dot" style="margin-left:auto"></div>
+</header>
 
-  <div class="transport">
-    <div class="bpm-display" id="bpm">---</div>
+<div class="transport">
+  <div>
+    <div class="bpm-val" id="bpm">—</div>
     <div class="bpm-label">BPM</div>
   </div>
-
-  <div id="empty">CONNECTING...</div>
-  <div class="grid" id="grid" style="display:none"></div>
 </div>
+
+<div id="empty">connecting…</div>
+<div class="grid" id="grid" style="display:none"></div>
 
 <script src="audio.js"></script>
 <script>
@@ -294,6 +123,14 @@ const WS = location.port
   : `ws://${location.hostname}/ws`
 
 let ws, state, currentStep = -1, schedulerTimer = null
+let globalMute = false
+
+document.getElementById('muteBtn').addEventListener('click', () => {
+  globalMute = !globalMute
+  const btn = document.getElementById('muteBtn')
+  btn.classList.toggle('muted', globalMute)
+  btn.textContent = globalMute ? 'UNMUTE' : 'MUTE'
+})
 
 const TRACK_NOTE = {
   'note-c': { name: 'C4', freq: 261.63 },
@@ -305,27 +142,18 @@ const TRACK_NOTE = {
   'note-b': { name: 'B4', freq: 493.88 },
 }
 
-function noteInfo(name) {
-  return TRACK_NOTE[name] || { name: name.toUpperCase(), freq: null }
-}
+function noteInfo(name) { return TRACK_NOTE[name] || { name, freq: null } }
 
 function sortedTracks(tracks) {
-  return [...tracks].sort((a, b) => {
-    const fa = a.frequency || noteInfo(a.name).freq || 0
-    const fb = b.frequency || noteInfo(b.name).freq || 0
-    return fb - fa
-  })
+  return [...tracks].sort((a, b) =>
+    (b.frequency || noteInfo(b.name).freq || 0) - (a.frequency || noteInfo(a.name).freq || 0))
 }
 
-// client-side mute state — not persisted to Kubernetes
-const localMutes = {}
-
-// client-side step overrides — reconciler will correct these
 const localOverrides = {}
 
 function connect() {
   ws = new WebSocket(WS)
-  ws.onopen  = () => document.getElementById('dot').classList.add('on')
+  ws.onopen = () => document.getElementById('dot').classList.add('on')
   ws.onclose = () => {
     document.getElementById('dot').classList.remove('on')
     setTimeout(connect, 2000)
@@ -347,15 +175,17 @@ function onState(payload) {
 
   state.tracks.forEach(track => {
     track.steps?.forEach(step => {
-      if (localOverrides[step.name] !== undefined &&
-          step.active === localOverrides[step.name]) {
+      if (localOverrides[step.name] !== undefined) {
         delete localOverrides[step.name]
       }
     })
   })
 
-  if (!prev) renderGrid()
-  else updateCells()
+  if (!prev) {
+    renderGrid()
+  } else {
+    updateCells()
+  }
 
   if (state.running && !schedulerTimer) startScheduler()
   if (!state.running && schedulerTimer) stopScheduler()
@@ -369,9 +199,7 @@ function updateCells() {
     Array.from(stepsEl.children).forEach((el, i) => {
       const step = sorted16[i]
       if (!step) return
-      const active = localOverrides[step.name] !== undefined
-        ? localOverrides[step.name]
-        : step.active
+      const active = localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active
       el.classList.toggle('active', active)
     })
   })
@@ -385,46 +213,26 @@ function renderGrid() {
   grid.innerHTML = ''
 
   sortedTracks(state.tracks).forEach(track => {
-    const info   = noteInfo(track.name)
-    const freq   = track.frequency || info.freq
-    const muted  = !!localMutes[track.name]
+    const info = noteInfo(track.name)
+    const freq = track.frequency || info.freq
 
     const row = document.createElement('div')
-    row.className = 'row' + (muted ? ' muted' : '')
-    row.dataset.track = track.name
+    row.className = 'row'
 
-    // note label
     const labelEl = document.createElement('div')
     labelEl.className = 'note-label'
-    labelEl.innerHTML = `${info.name}${freq ? `<span class="note-hz">${freq.toFixed(0)}HZ</span>` : ''}`
+    labelEl.innerHTML = info.name + (freq ? `<span class="note-hz">${freq.toFixed(0)}Hz</span>` : '')
     row.appendChild(labelEl)
 
-    // mute button
-    const muteBtn = document.createElement('div')
-    muteBtn.className = 'mute-btn' + (muted ? ' muted' : '')
-    muteBtn.textContent = 'M'
-    muteBtn.addEventListener('click', () => {
-      localMutes[track.name] = !localMutes[track.name]
-      muteBtn.classList.toggle('muted', !!localMutes[track.name])
-      row.classList.toggle('muted', !!localMutes[track.name])
-    })
-    row.appendChild(muteBtn)
-
-    // steps
     const stepsEl = document.createElement('div')
     stepsEl.className = 'steps'
 
     const sorted16 = [...(track.steps||[])].sort((a,b) => a.index - b.index)
     sorted16.forEach(step => {
       const el = document.createElement('div')
-      const active = localOverrides[step.name] !== undefined
-        ? localOverrides[step.name]
-        : step.active
-      el.className = 'step' + (active ? ' active' : '') + (step.index === currentStep ? ' current' : '')
+      el.className = 'step' + (step.active ? ' active' : '') + (step.index === currentStep ? ' current' : '')
       el.addEventListener('click', () => {
-        const cur = localOverrides[step.name] !== undefined
-          ? localOverrides[step.name]
-          : step.active
+        const cur = localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active
         const next = !cur
         localOverrides[step.name] = next
         el.classList.toggle('active', next)
@@ -457,18 +265,18 @@ function stopScheduler() {
 function tick() {
   if (!state) return
   currentStep = (currentStep + 1) % 16
-  sortedTracks(state.tracks).forEach(track => {
-    if (localMutes[track.name] || track.muted) return
-    const steps = [...(track.steps||[])].sort((a,b) => a.index - b.index)
-    const step  = steps[currentStep]
-    const active = step && (localOverrides[step.name] !== undefined
-      ? localOverrides[step.name]
-      : step.active)
-    if (active) {
-      const freq = track.frequency || noteInfo(track.name).freq || 440
-      playInstrument(track.instrument, track.volume, step.velocity, track.waveform, freq)
-    }
-  })
+  if (!globalMute) {
+    sortedTracks(state.tracks).forEach(track => {
+      if (track.muted) return
+      const steps = [...(track.steps||[])].sort((a,b) => a.index - b.index)
+      const step = steps[currentStep]
+      const active = step && (localOverrides[step.name] !== undefined ? localOverrides[step.name] : step.active)
+      if (active) {
+        const freq = track.frequency || noteInfo(track.name).freq || 440
+        playInstrument(track.instrument, track.volume, step.velocity, track.waveform, freq)
+      }
+    })
+  }
   document.querySelectorAll('.steps').forEach(stepsEl => {
     Array.from(stepsEl.children).forEach((el, i) => el.classList.toggle('current', i === currentStep))
   })
